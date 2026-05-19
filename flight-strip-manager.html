@@ -223,23 +223,6 @@
 
   select option { background: #050805; }
 
-  .color-selector {
-    display: flex;
-    gap: 6px;
-  }
-
-  .color-btn {
-    width: 28px;
-    height: 28px;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: transform 0.1s, border-color 0.1s;
-    border-radius: 2px;
-  }
-
-  .color-btn:hover { transform: scale(1.15); }
-  .color-btn.active { border-color: var(--crt-green); transform: scale(1.1); }
-
   .sep {
     height: 1px;
     background: var(--panel-border);
@@ -353,6 +336,15 @@
     border-radius: 2px;
   }
 
+  .strip-wrapper.new {
+    animation: strip-appear 0.25s ease-out;
+  }
+
+  @keyframes strip-appear {
+    0%   { opacity: 0; transform: translateY(-6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
   /* The actual paper strip */
   .flight-strip {
     flex: 1;
@@ -373,11 +365,11 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.4);
   }
 
-  .flight-strip.color-blue   { background: var(--strip-blue); border-left-color: #2563eb; }
+  .flight-strip.color-blue   { background: var(--strip-blue);   border-left-color: #2563eb; }
   .flight-strip.color-yellow { background: var(--strip-yellow); border-left-color: #ca8a04; }
-  .flight-strip.color-pink   { background: var(--strip-pink); border-left-color: #be185d; }
-  .flight-strip.color-green  { background: var(--strip-green); border-left-color: #166534; }
-  .flight-strip.color-white  { background: var(--strip-white); border-left-color: #333; }
+  .flight-strip.color-pink   { background: var(--strip-pink);   border-left-color: #be185d; }
+  .flight-strip.color-green  { background: var(--strip-green);  border-left-color: #166534; }
+  .flight-strip.color-white  { background: var(--strip-white);  border-left-color: #333; }
 
   .strip-cell {
     border-right: 1px solid #bbb;
@@ -471,6 +463,8 @@
   .strip-btn.transfer:hover { background: #003a00; color: #44ff44; }
   .strip-btn.hold:hover { background: #3a2a00; color: #ffaa00; }
 
+  .strip-btn:hover .tooltip { opacity: 1; }
+
   /* Time annotation on strip */
   .strip-time {
     position: absolute;
@@ -529,14 +523,6 @@
 
   .statusbar span { color: var(--crt-green); }
 
-  /* Blink effect for new strips */
-  @keyframes strip-appear {
-    0%   { opacity: 0; transform: translateY(-6px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-
-  .strip-wrapper.new { animation: strip-appear 0.25s ease-out; }
-
   /* Warning glow for certain squawks */
   .flight-strip.emg {
     animation: emg-flash 1s infinite alternate;
@@ -548,37 +534,104 @@
     100% { box-shadow: 0 0 14px #ff000066; }
   }
 
+  /* Tooltip */
+  .tooltip {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000;
+    color: var(--crt-green);
+    font-size: 9px;
+    padding: 3px 7px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    border: 1px solid var(--crt-dim);
+    letter-spacing: 1px;
+    transition: opacity 0.15s;
+    z-index: 10;
+  }
+
+  .sector-label {
+    font-size: 9px;
+    color: var(--crt-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 0 2px;
+    border-bottom: 1px dashed #1a2a1a;
+    margin-bottom: 4px;
+  }
+
+  .drag-hint {
+    font-size: 9px;
+    color: var(--crt-dim);
+    letter-spacing: 1px;
+    text-align: center;
+    padding: 4px;
+    opacity: 0.5;
+  }
+
   /* ===================== PRINT STYLES ===================== */
   @media print {
-    body { background: white !important; color: black !important; }
+    body {
+      background: white !important;
+      color: black !important;
+      margin: 0;
+      padding: 0.5in 0.5in;
+    }
     body::before { display: none; }
-    .header, .sidebar, .bay-controls, .statusbar, .strip-actions, .print-no { display: none !important; }
-    .main { grid-template-columns: 1fr !important; height: auto !important; }
-    .bay-area { overflow: visible !important; }
-    .strips-container { overflow: visible !important; padding: 0 !important; }
-
-    .strip-wrapper { break-inside: avoid; margin-bottom: 6px; }
-
+    .header,
+    .sidebar,
+    .bay-controls,
+    .statusbar,
+    .strip-actions,
+    .drag-hint,
+    .tooltip,
+    .print-no {
+      display: none !important;
+    }
+    .main {
+      grid-template-columns: 1fr !important;
+      height: auto !important;
+    }
+    .bay-area {
+      overflow: visible !important;
+    }
+    .strips-container {
+      padding: 0 !important;
+      overflow: visible !important;
+      display: flex !important;
+      flex-direction: column;
+      gap: 6px !important;
+    }
+    .strip-wrapper {
+      width: 3in;          /* ≈ real flight‑strip width */
+      margin: 0 auto;      /* center on page */
+      break-inside: avoid;
+      break-after: auto;
+    }
+    .strip-wrapper.new {
+      animation: none;
+      transform: none;
+      opacity: 1;
+    }
+    .strip-wrapper.drag-over::before {
+      display: none;
+    }
     .flight-strip {
       border: 1.5px solid #333 !important;
       box-shadow: none !important;
       animation: none !important;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
+      width: 100%;
     }
-
     .cell-value { color: #000 !important; }
     .cell-label { color: #555 !important; }
     .notes-input { color: #000 !important; }
     .strip-time { color: #555 !important; }
     .strip-amended { color: #cc0000 !important; }
-
-    /* FAA-style print: strips in column of 3 per row */
-    .strips-container {
-      display: grid !important;
-      grid-template-columns: repeat(3, 1fr) !important;
-      gap: 6px !important;
-    }
   }
 
   /* Modal */
@@ -616,45 +669,6 @@
     gap: 8px;
     margin-top: 16px;
     justify-content: flex-end;
-  }
-
-  .tooltip {
-    position: absolute;
-    bottom: 110%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #000;
-    color: var(--crt-green);
-    font-size: 9px;
-    padding: 3px 7px;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    border: 1px solid var(--crt-dim);
-    letter-spacing: 1px;
-    transition: opacity 0.15s;
-    z-index: 10;
-  }
-
-  .strip-btn:hover .tooltip { opacity: 1; }
-
-  .sector-label {
-    font-size: 9px;
-    color: var(--crt-dim);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 6px 0 2px;
-    border-bottom: 1px dashed #1a2a1a;
-    margin-bottom: 4px;
-  }
-
-  .drag-hint {
-    font-size: 9px;
-    color: var(--crt-dim);
-    letter-spacing: 1px;
-    text-align: center;
-    padding: 4px;
-    opacity: 0.5;
   }
 </style>
 </head>
@@ -763,17 +777,6 @@
       </div>
     </div>
 
-    <div class="form-group">
-      <label>Strip Color</label>
-      <div class="color-selector">
-        <div class="color-btn active" data-color="white" style="background:#f8f8f8; border-color:var(--crt-green);" onclick="selectColor(this, 'white')"></div>
-        <div class="color-btn" data-color="blue"   style="background:var(--strip-blue);"   onclick="selectColor(this,'blue')"></div>
-        <div class="color-btn" data-color="yellow" style="background:var(--strip-yellow);" onclick="selectColor(this,'yellow')"></div>
-        <div class="color-btn" data-color="pink"   style="background:var(--strip-pink);"   onclick="selectColor(this,'pink')"></div>
-        <div class="color-btn" data-color="green"  style="background:var(--strip-green);"  onclick="selectColor(this,'green')"></div>
-      </div>
-    </div>
-
     <div class="sep"></div>
     <button class="btn" onclick="addStrip()" style="width:100%; padding:10px; letter-spacing:3px; font-size:12px;">
       + ISSUE STRIP
@@ -877,7 +880,6 @@
 let strips = [];
 let currentBay = 'All';
 let dragSrcId = null;
-let selectedColor = 'white';
 
 // ─── Clock ───────────────────────────────────────────────
 function updateClock() {
@@ -890,19 +892,8 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// ─── Color selection ──────────────────────────────────────
-function selectColor(el, color) {
-  document.querySelectorAll('.color-btn').forEach(b => {
-    b.classList.remove('active');
-    b.style.borderColor = 'transparent';
-  });
-  el.classList.add('active');
-  el.style.borderColor = 'var(--crt-green)';
-  selectedColor = color;
-}
-
 // ─── Uppercase inputs ─────────────────────────────────────
-['f-callsign','f-actype','f-origin','f-dest','f-route'].forEach(id => {
+['f-callsign','f-actype','f-origins','f-dest','f-route'].forEach(id => {
   const el = document.getElementById(id);
   if(el) el.addEventListener('input', () => el.value = el.value.toUpperCase());
 });
@@ -914,6 +905,15 @@ function addStrip(data) {
 
   const now = new Date();
   const zulu = `${String(now.getUTCHours()).padStart(2,'0')}${String(now.getUTCMinutes()).padStart(2,'0')}`;
+
+  // Auto color by phase
+  const bay  = data?.bay  || document.getElementById('f-bay').value || 'Pending';
+  const stat = data?.status|| document.getElementById('f-status').value || 'dep';
+  let color = 'white';
+  if (stat === 'dep')     color = 'blue';
+  if (stat === 'arr')     color = 'green';
+  if (stat === 'ovr')     color = 'yellow';
+  if (stat === 'hld')     color = 'pink';
 
   const strip = {
     id: Date.now() + Math.random(),
@@ -927,9 +927,9 @@ function addStrip(data) {
     speed:    data?.speed    || document.getElementById('f-speed').value || '---',
     squawk:   data?.squawk   || document.getElementById('f-squawk').value || '1200',
     route:    data?.route    || document.getElementById('f-route').value.toUpperCase() || '',
-    bay:      data?.bay      || document.getElementById('f-bay').value || 'Pending',
-    status:   data?.status   || document.getElementById('f-status').value || 'dep',
-    color:    data?.color    || selectedColor,
+    bay:      bay,
+    status:   stat,
+    color:    color,
     notes:    data?.notes    || '',
     time:     zulu,
     amended:  false,
@@ -1185,11 +1185,11 @@ function importFPL() {
   const raw = document.getElementById('import-text').value;
   // Very basic parser for demo
   const cs = (raw.match(/FPL-([A-Z0-9]+)-/) || [])[1] || 'UNKNOWN';
-  const acType = (raw.match(/-([A-Z0-9]+)\/[A-Z]/) || [])[1] || 'UNKN';
-  const origin = (raw.match(/-([A-Z]{4})\d{4}/) || [])[1] || '????';
-  const dest   = (raw.match(/\n-([A-Z]{4})\n/) || [])[1] || '????';
-  const speed  = (raw.match(/N(\d{4})F/) || raw.match(/K(\d{4})F/) || [])[1] || '450';
-  const altFL  = (raw.match(/F(\d{3})/) || [])[1] || '350';
+  const acType = (raw.match(/-([A-Z0-9]+)\\/[A-Z]/) || [])[1] || 'UNKN';
+  const origin = (raw.match(/-([A-Z]{4})\\d{4}/) || [])[1] || '????';
+  const dest   = (raw.match(/\\n-([A-Z]{4})\\n/) || [])[1] || '????';
+  const speed  = (raw.match(/N(\\d{4})F/) || raw.match(/K(\\d{4})F/) || [])[1] || '450';
+  const altFL  = (raw.match(/F(\\d{3})/) || [])[1] || '350';
 
   addStrip({
     callsign: cs,
@@ -1201,7 +1201,7 @@ function importFPL() {
     asgnAlt: altFL,
     speed: speed,
     squawk: String(Math.floor(1000 + Math.random()*6777)),
-    route: raw.replace(/\n/g,' ').substring(0, 60),
+    route: raw.replace(/\\n/g,' ').substring(0, 60),
     bay: 'Pending',
     status: 'dep',
     color: 'white',
@@ -1214,13 +1214,13 @@ function importFPL() {
 // ─── Sample traffic ───────────────────────────────────────
 function loadSample() {
   const samples = [
-    { callsign:'UAL123', actype:'B738', equip:'/L', origin:'KORD', dest:'KLAX', alt:'350', asgnAlt:'350', speed:'450', squawk:'4521', bay:'Enroute', status:'ovr', color:'blue',   route:'PLANO JORDY GAYBO', notes:'' },
-    { callsign:'DAL456', actype:'A320', equip:'/L', origin:'KATL', dest:'KSEA', alt:'370', asgnAlt:'370', speed:'440', squawk:'2345', bay:'Enroute', status:'ovr', color:'white',  route:'QUAGG J80 FORGY',   notes:'' },
-    { callsign:'AAL789', actype:'B777', equip:'/L', origin:'KJFK', dest:'KLAX', alt:'390', asgnAlt:'390', speed:'480', squawk:'3322', bay:'Departure', status:'dep', color:'yellow', route:'MERIT6 MERIT JFK',  notes:'EDCT 1430' },
-    { callsign:'SWA211', actype:'B737', equip:'/L', origin:'KMDW', dest:'KPHX', alt:'350', asgnAlt:'290', speed:'420', squawk:'7700', bay:'Arrival',   status:'arr', color:'pink',   route:'GBD J80 TUS',       notes:'EMRG DECLARED' },
-    { callsign:'SKW3345',actype:'E175', equip:'/L', origin:'KDEN', dest:'KSFO', alt:'330', asgnAlt:'330', speed:'410', squawk:'1432', bay:'Arrival',   status:'arr', color:'green',  route:'DBL J146 LAS',      notes:'' },
-    { callsign:'JBU2244',actype:'A321', equip:'/L', origin:'KBOS', dest:'KFLL', alt:'340', asgnAlt:'320', speed:'430', squawk:'5511', bay:'Handoff',  status:'dep', color:'white',  route:'BOS V3 HTO CAMRN',  notes:'XFR ZNY' },
-    { callsign:'ASA19',  actype:'B739', equip:'/L', origin:'KSEA', dest:'KDEN', alt:'360', asgnAlt:'360', speed:'455', squawk:'4413', bay:'Pending',   status:'dep', color:'blue',   route:'SEA2 J502 BOI',     notes:'FL360 FILED' },
+    { callsign:'UAL123', actype:'B738', equip:'/L', origin:'KORD', dest:'KLAX', alt:'350', asgnAlt:'350', speed:'450', squawk:'4521', bay:'Enroute', status:'ovr', route:'PLANO JORDY GAYBO', notes:'' },
+    { callsign:'DAL456', actype:'A320', equip:'/L', origin:'KATL', dest:'KSEA', alt:'370', asgnAlt:'370', speed:'440', squawk:'2345', bay:'Enroute', status:'ovr', route:'QUAGG J80 FORGY',   notes:'' },
+    { callsign:'AAL789', actype:'B777', equip:'/L', origin:'KJFK', dest:'KLAX', alt:'390', asgnAlt:'390', speed:'480', squawk:'3322', bay:'Departure', status:'dep', route:'MERIT6 MERIT JFK',  notes:'EDCT 1430' },
+    { callsign:'SWA211', actype:'B737', equip:'/L', origin:'KMDW', dest:'KPHX', alt:'350', asgnAlt:'290', speed:'420', squawk:'7700', bay:'Arrival',   status:'arr', route:'GBD J80 TUS',       notes:'EMRG DECLARED' },
+    { callsign:'SKW3345',actype:'E175', equip:'/L', origin:'KDEN', dest:'KSFO', alt:'330', asgnAlt:'330', speed:'410', squawk:'1432', bay:'Arrival',   status:'arr', route:'DBL J146 LAS',      notes:'' },
+    { callsign:'JBU2244',actype:'A321', equip:'/L', origin:'KBOS', dest:'KFLL', alt:'340', asgnAlt:'320', speed:'430', squawk:'5511', bay:'Handoff',  status:'dep', route:'BOS V3 HTO CAMRN',  notes:'XFR ZNY' },
+    { callsign:'ASA19',  actype:'B739', equip:'/L', origin:'KSEA', dest:'KDEN', alt:'360', asgnAlt:'360', speed:'455', squawk:'4413', bay:'Pending',   status:'dep', route:'SEA2 J502 BOI',     notes:'FL360 FILED' },
   ];
   samples.forEach(s => addStrip(s));
 }
@@ -1228,6 +1228,5 @@ function loadSample() {
 // Initial render
 renderStrips();
 </script>
-
 </body>
 </html>
