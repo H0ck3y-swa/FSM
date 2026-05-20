@@ -6,164 +6,735 @@
 <title>ARTCC Flight Strip Manager</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;600;700&family=Courier+Prime:wght@400;700&display=swap');
+
   :root {
-    --crt-green:#00ff41; --crt-amber:#ffb000; --crt-dim:#006618;
-    --bg-dark:#0a0c0a; --bg-panel:#0d110d; --bg-strip:#f5f0e8;
-    --strip-border:#2a2a2a; --strip-blue:#cce5ff; --strip-yellow:#fff9cc;
-    --strip-pink:#ffd6e0; --strip-green:#d4edda; --strip-white:#f8f8f8;
-    --panel-border:#1a2a1a; --highlight:#00ff41; --danger:#ff3333; --warn:#ffaa00;
+    --crt-green: #00ff41;
+    --crt-amber: #ffb000;
+    --crt-dim: #006618;
+    --bg-dark: #0a0c0a;
+    --bg-panel: #0d110d;
+    --bg-strip: #f5f0e8;
+    --strip-border: #2a2a2a;
+    --strip-blue: #cce5ff;
+    --strip-yellow: #fff9cc;
+    --strip-pink: #ffd6e0;
+    --strip-green: #d4edda;
+    --strip-white: #f8f8f8;
+    --panel-border: #1a2a1a;
+    --highlight: #00ff41;
+    --danger: #ff3333;
+    --warn: #ffaa00;
   }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg-dark);color:var(--crt-green);font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden}
-  body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;z-index:9999}
-  .header{background:#060806;border-bottom:2px solid var(--crt-dim);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-  .header-left{display:flex;align-items:center;gap:20px}
-  .logo{font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;color:var(--crt-green);letter-spacing:3px;text-transform:uppercase;line-height:1.3}
-  .logo span{display:block;font-size:18px;letter-spacing:6px;color:var(--crt-amber)}
-  .clock{font-size:28px;color:var(--crt-amber);letter-spacing:4px;text-shadow:0 0 20px #ffb00066;font-weight:bold}
-  .clock-label{font-size:9px;color:var(--crt-dim);letter-spacing:2px;text-align:center}
-  .header-right{display:flex;gap:10px;align-items:center}
-  .btn{background:transparent;border:1px solid var(--crt-green);color:var(--crt-green);font-family:'Share Tech Mono',monospace;font-size:11px;padding:6px 14px;cursor:pointer;letter-spacing:2px;text-transform:uppercase;transition:all .15s;position:relative;overflow:hidden}
-  .btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:var(--crt-green);transition:left .15s;z-index:-1}
-  .btn:hover{color:#000;text-shadow:none}
-  .btn:hover::before{left:0}
-  .btn-amber{border-color:var(--crt-amber);color:var(--crt-amber)} .btn-amber::before{background:var(--crt-amber)}
-  .btn-danger{border-color:var(--danger);color:var(--danger)} .btn-danger::before{background:var(--danger)}
-  .main{display:grid;grid-template-columns:320px 1fr;height:calc(100vh - 72px)}
-  .sidebar{background:var(--bg-panel);border-right:1px solid var(--panel-border);padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
-  .sidebar-title{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:4px;color:var(--crt-amber);border-bottom:1px solid var(--crt-dim);padding-bottom:8px;text-transform:uppercase}
-  .form-group{display:flex;flex-direction:column;gap:4px}
-  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  label{font-size:9px;letter-spacing:2px;color:var(--crt-dim);text-transform:uppercase}
-  input,select,textarea{background:#050805;border:1px solid var(--crt-dim);color:var(--crt-green);font-family:'Share Tech Mono',monospace;font-size:13px;padding:6px 8px;width:100%;letter-spacing:1px;outline:none}
-  input:focus,select:focus,textarea:focus{border-color:var(--crt-green);box-shadow:0 0 8px #00ff4122}
-  input::placeholder,textarea::placeholder{color:#1a3a1a}
-  select option{background:#050805}
-  .sep{height:1px;background:var(--panel-border)}
-  .bay-area{display:flex;flex-direction:column;overflow:hidden}
-  .bay-controls{background:#080a08;border-bottom:1px solid var(--panel-border);padding:8px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .bay-tab{font-size:10px;letter-spacing:2px;padding:4px 12px;border:1px solid var(--crt-dim);cursor:pointer;color:var(--crt-dim);transition:all .15s;text-transform:uppercase}
-  .bay-tab.active{border-color:var(--crt-amber);color:var(--crt-amber);background:#1a0f00}
-  .bay-tab:hover:not(.active){color:var(--crt-green);border-color:var(--crt-green)}
-  .strip-count{font-size:10px;color:var(--crt-dim);margin-left:auto;letter-spacing:1px}
-  .strips-container{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:4px}
-  .strips-container::-webkit-scrollbar,.sidebar::-webkit-scrollbar{width:6px}
-  .strips-container::-webkit-scrollbar-thumb,.sidebar::-webkit-scrollbar-thumb{background:var(--crt-dim)}
-  .strips-container::-webkit-scrollbar-track,.sidebar::-webkit-scrollbar-track{background:#050805}
-  .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--crt-dim);gap:8px;pointer-events:none}
-  .empty-state .radar-icon{font-size:48px;opacity:.3;animation:radar-spin 4s linear infinite}
-  @keyframes radar-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-  .strip-wrapper{display:flex;align-items:stretch;gap:0;cursor:grab;transition:transform .1s,opacity .1s;position:relative}
-  .strip-wrapper:active{cursor:grabbing}
-  .strip-wrapper.dragging{opacity:.4}
-  .strip-wrapper.drag-over{transform:translateY(2px)}
-  .strip-wrapper.drag-over::before{content:'';position:absolute;top:-3px;left:0;right:0;height:3px;background:var(--crt-green);box-shadow:0 0 8px var(--crt-green);border-radius:2px}
-  .strip-wrapper.new{animation:strip-appear .25s ease-out}
-  @keyframes strip-appear{0%{opacity:0;transform:translateY(-6px)}100%{opacity:1;transform:translateY(0)}}
-  .flight-strip{flex:1;background:var(--strip-white);border:1px solid #999;border-left:6px solid #333;display:grid;grid-template-columns:90px 100px 80px 80px 70px 1fr 70px;min-height:52px;font-family:'Courier Prime','Courier New',monospace;position:relative;overflow:hidden;transition:box-shadow .2s;user-select:none}
-  .flight-strip:hover{box-shadow:0 2px 12px rgba(0,0,0,.4)}
-  .flight-strip.color-blue{background:var(--strip-blue);border-left-color:#2563eb}
-  .flight-strip.color-yellow{background:var(--strip-yellow);border-left-color:#ca8a04}
-  .flight-strip.color-pink{background:var(--strip-pink);border-left-color:#be185d}
-  .flight-strip.color-green{background:var(--strip-green);border-left-color:#166534}
-  .flight-strip.color-white{background:var(--strip-white);border-left-color:#333}
-  .strip-cell{border-right:1px solid #bbb;padding:4px 5px;display:flex;flex-direction:column;justify-content:center;position:relative;min-width:0}
-  .strip-cell:last-child{border-right:none}
-  .cell-label{font-size:7px;color:#888;letter-spacing:.5px;line-height:1;text-transform:uppercase;margin-bottom:1px}
-  .cell-value{font-size:13px;font-weight:700;color:#111;letter-spacing:.5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .cell-value.callsign{font-size:15px;letter-spacing:1px}
-  .cell-value.altitude{color:#1a1a8c}.cell-value.speed{color:#7c0000}.cell-value.squawk{color:#006600}
-  .strip-notes{flex-direction:column;justify-content:flex-start;padding:4px 6px;gap:2px}
-  .notes-input{background:transparent;border:none;font-family:'Courier Prime',monospace;font-size:10px;color:#333;width:100%;resize:none;outline:none;cursor:text;padding:0;line-height:1.3;flex:1}
-  .strip-actions{display:flex;flex-direction:column;gap:1px;width:28px;flex-shrink:0}
-  .strip-btn{flex:1;background:#111;border:none;color:#555;cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;transition:all .12s;font-family:'Share Tech Mono',monospace;min-height:16px;position:relative}
-  .strip-btn:hover{background:#222;color:#aaa}.strip-btn.delete:hover{background:#3a0000;color:#ff4444}.strip-btn.transfer:hover{background:#003a00;color:#44ff44}.strip-btn.hold:hover{background:#3a2a00;color:#ffaa00}
-  .tooltip{position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:#000;color:var(--crt-green);font-size:9px;padding:3px 7px;white-space:nowrap;pointer-events:none;opacity:0;border:1px solid var(--crt-dim);letter-spacing:1px;transition:opacity .15s;z-index:10}
-  .strip-btn:hover .tooltip{opacity:1}
-  .strip-time{position:absolute;bottom:2px;right:4px;font-size:8px;color:#999;font-family:'Courier Prime',monospace}
-  .strip-amended{position:absolute;top:2px;right:4px;font-size:7px;color:#cc0000;font-weight:bold;letter-spacing:.5px}
-  .status-tag{font-size:8px;padding:1px 4px;letter-spacing:.5px;border-radius:2px;font-weight:bold;text-transform:uppercase;display:inline-block;margin-top:2px;font-family:'Courier Prime',monospace}
-  .status-tag.dep{background:#1a1a8c;color:#fff}.status-tag.arr{background:#006600;color:#fff}.status-tag.ovr{background:#7c0000;color:#fff}.status-tag.hld{background:#7c4a00;color:#fff}
-  .statusbar{background:#060806;border-top:1px solid var(--panel-border);padding:4px 16px;display:flex;gap:24px;font-size:9px;color:var(--crt-dim);letter-spacing:1px}
-  .statusbar span{color:var(--crt-green)}
-  .flight-strip.emg{animation:emg-flash 1s infinite alternate;border-left-color:#ff0000!important}
-  @keyframes emg-flash{0%{box-shadow:0 0 0 transparent}100%{box-shadow:0 0 14px #ff000066}}
-  .sector-label{font-size:9px;color:var(--crt-dim);letter-spacing:2px;text-transform:uppercase;padding:6px 0 2px;border-bottom:1px dashed #1a2a1a;margin-bottom:4px}
-  .drag-hint{font-size:9px;color:var(--crt-dim);letter-spacing:1px;text-align:center;padding:4px;opacity:.5}
-  @media print{
-    body{background:#fff!important;color:#000!important;margin:0;padding:.5in .5in}
-    body::before,.header,.sidebar,.bay-controls,.statusbar,.strip-actions,.drag-hint,.tooltip{display:none!important}
-    .main{grid-template-columns:1fr!important;height:auto!important}
-    .bay-area{overflow:visible!important}
-    .strips-container{padding:0!important;overflow:visible!important;display:flex!important;flex-direction:column;gap:6px!important}
-    .strip-wrapper{width:3in;margin:0 auto;break-inside:avoid}
-    .flight-strip{border:1.5px solid #333!important;box-shadow:none!important;animation:none!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;width:100%}
-    .cell-value,.notes-input{color:#000!important}
-    .cell-label,.strip-time{color:#555!important}
-    .strip-amended{color:#cc0000!important}
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg-dark);
+    color: var(--crt-green);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
   }
-  .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;align-items:center;justify-content:center}
-  .modal-backdrop.open{display:flex}
-  .modal{background:var(--bg-panel);border:1px solid var(--crt-green);padding:24px;min-width:340px;box-shadow:0 0 40px #00ff4122}
-  .modal-title{font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:4px;color:var(--crt-amber);margin-bottom:16px;text-transform:uppercase}
-  .modal-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .header {
+    background: #060806;
+    border-bottom: 2px solid var(--crt-dim);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .logo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--crt-green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 1.3;
+  }
+
+  .logo span {
+    display: block;
+    font-size: 18px;
+    letter-spacing: 6px;
+    color: var(--crt-amber);
+  }
+
+  .clock {
+    font-size: 28px;
+    color: var(--crt-amber);
+    letter-spacing: 4px;
+    text-shadow: 0 0 20px #ffb00066;
+    font-weight: bold;
+  }
+
+  .clock-label {
+    font-size: 9px;
+    color: var(--crt-dim);
+    letter-spacing: 2px;
+    text-align: center;
+  }
+
+  .header-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .btn {
+    background: transparent;
+    border: 1px solid var(--crt-green);
+    color: var(--crt-green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--crt-green);
+    transition: left 0.15s;
+    z-index: -1;
+  }
+
+  .btn:hover {
+    color: #000;
+    text-shadow: none;
+  }
+
+  .btn:hover::before {
+    left: 0;
+  }
+
+  .btn-amber {
+    border-color: var(--crt-amber);
+    color: var(--crt-amber);
+  }
+
+  .btn-amber::before {
+    background: var(--crt-amber);
+  }
+
+  .btn-danger {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .btn-danger::before {
+    background: var(--danger);
+  }
+
+  .main {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    height: calc(100vh - 72px);
+  }
+
+  .sidebar {
+    background: var(--bg-panel);
+    border-right: 1px solid var(--panel-border);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .sidebar-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--crt-amber);
+    border-bottom: 1px solid var(--crt-dim);
+    padding-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--crt-dim);
+    text-transform: uppercase;
+  }
+
+  input, select, textarea {
+    background: #050805;
+    border: 1px solid var(--crt-dim);
+    color: var(--crt-green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    padding: 6px 8px;
+    width: 100%;
+    letter-spacing: 1px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--crt-green);
+    box-shadow: 0 0 8px #00ff4122;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: #1a3a1a;
+  }
+
+  select option {
+    background: #050805;
+  }
+
+  .sep {
+    height: 1px;
+    background: var(--panel-border);
+  }
+
+  .bay-area {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .bay-controls {
+    background: #080a08;
+    border-bottom: 1px solid var(--panel-border);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .bay-tab {
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    border: 1px solid var(--crt-dim);
+    cursor: pointer;
+    color: var(--crt-dim);
+    transition: all 0.15s;
+    text-transform: uppercase;
+  }
+
+  .bay-tab.active {
+    border-color: var(--crt-amber);
+    color: var(--crt-amber);
+    background: #1a0f00;
+  }
+
+  .bay-tab:hover:not(.active) {
+    color: var(--crt-green);
+    border-color: var(--crt-green);
+  }
+
+  .strip-count {
+    font-size: 10px;
+    color: var(--crt-dim);
+    margin-left: auto;
+    letter-spacing: 1px;
+  }
+
+  .strips-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .strips-container::-webkit-scrollbar { width: 6px; }
+  .strips-container::-webkit-scrollbar-track { background: #050805; }
+  .strips-container::-webkit-scrollbar-thumb { background: var(--crt-dim); }
+
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--crt-dim);
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .empty-state .radar-icon {
+    font-size: 48px;
+    opacity: 0.3;
+    animation: radar-spin 4s linear infinite;
+  }
+
+  @keyframes radar-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .strip-wrapper {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    cursor: grab;
+    transition: transform 0.1s, opacity 0.1s;
+    position: relative;
+  }
+
+  .strip-wrapper:active { cursor: grabbing; }
+  .strip-wrapper.dragging { opacity: 0.4; }
+  .strip-wrapper.drag-over { transform: translateY(2px); }
+
+  .strip-wrapper.drag-over::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--crt-green);
+    box-shadow: 0 0 8px var(--crt-green);
+    border-radius: 2px;
+  }
+
+  .strip-wrapper.new {
+    animation: strip-appear 0.25s ease-out;
+  }
+
+  @keyframes strip-appear {
+    0% { opacity: 0; transform: translateY(-6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .flight-strip {
+    flex: 1;
+    background: var(--strip-white);
+    border: 1px solid #999;
+    border-left: 6px solid #333;
+    display: grid;
+    grid-template-columns: 90px 100px 80px 80px 70px 1fr 70px;
+    min-height: 52px;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+    user-select: none;
+  }
+
+  .flight-strip:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  }
+
+  .flight-strip.color-blue { background: var(--strip-blue); border-left-color: #2563eb; }
+  .flight-strip.color-yellow { background: var(--strip-yellow); border-left-color: #ca8a04; }
+  .flight-strip.color-pink { background: var(--strip-pink); border-left-color: #be185d; }
+  .flight-strip.color-green { background: var(--strip-green); border-left-color: #166534; }
+  .flight-strip.color-white { background: var(--strip-white); border-left-color: #333; }
+
+  .strip-cell {
+    border-right: 1px solid #bbb;
+    padding: 4px 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    min-width: 0;
+  }
+
+  .strip-cell:last-child {
+    border-right: none;
+  }
+
+  .cell-label {
+    font-size: 7px;
+    color: #888;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    text-transform: uppercase;
+    margin-bottom: 1px;
+  }
+
+  .cell-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cell-value.callsign {
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+
+  .cell-value.altitude { color: #1a1a8c; }
+  .cell-value.speed { color: #7c0000; }
+  .cell-value.squawk { color: #006600; }
+
+  .strip-notes {
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 4px 6px;
+    gap: 2px;
+  }
+
+  .notes-input {
+    background: transparent;
+    border: none;
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    color: #333;
+    width: 100%;
+    resize: none;
+    outline: none;
+    cursor: text;
+    padding: 0;
+    line-height: 1.3;
+    flex: 1;
+  }
+
+  .strip-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    width: 28px;
+    flex-shrink: 0;
+  }
+
+  .strip-btn {
+    flex: 1;
+    background: #111;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.12s;
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 16px;
+    position: relative;
+  }
+
+  .strip-btn:hover { background: #222; color: #aaa; }
+  .strip-btn.delete:hover { background: #3a0000; color: #ff4444; }
+  .strip-btn.transfer:hover { background: #003a00; color: #44ff44; }
+  .strip-btn.hold:hover { background: #3a2a00; color: #ffaa00; }
+
+  .tooltip {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000;
+    color: var(--crt-green);
+    font-size: 9px;
+    padding: 3px 7px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    border: 1px solid var(--crt-dim);
+    letter-spacing: 1px;
+    transition: opacity 0.15s;
+    z-index: 10;
+  }
+
+  .strip-btn:hover .tooltip {
+    opacity: 1;
+  }
+
+  .strip-time {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 8px;
+    color: #999;
+    font-family: 'Courier Prime', monospace;
+  }
+
+  .strip-amended {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 7px;
+    color: #cc0000;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+  }
+
+  .status-tag {
+    font-size: 8px;
+    padding: 1px 4px;
+    letter-spacing: 0.5px;
+    border-radius: 2px;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-top: 2px;
+    font-family: 'Courier Prime', monospace;
+  }
+
+  .status-tag.dep { background: #1a1a8c; color: white; }
+  .status-tag.arr { background: #006600; color: white; }
+  .status-tag.ovr { background: #7c0000; color: white; }
+  .status-tag.hld { background: #7c4a00; color: white; }
+
+  .statusbar {
+    background: #060806;
+    border-top: 1px solid var(--panel-border);
+    padding: 4px 16px;
+    display: flex;
+    gap: 24px;
+    font-size: 9px;
+    color: var(--crt-dim);
+    letter-spacing: 1px;
+  }
+
+  .statusbar span { color: var(--crt-green); }
+
+  .flight-strip.emg {
+    animation: emg-flash 1s infinite alternate;
+    border-left-color: #ff0000 !important;
+  }
+
+  @keyframes emg-flash {
+    0% { box-shadow: 0 0 0 transparent; }
+    100% { box-shadow: 0 0 14px #ff000066; }
+  }
+
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-backdrop.open {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--bg-panel);
+    border: 1px solid var(--crt-green);
+    padding: 24px;
+    min-width: 340px;
+    box-shadow: 0 0 40px #00ff4122;
+  }
+
+  .modal-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: var(--crt-amber);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    justify-content: flex-end;
+  }
+
+  @media print {
+    body {
+      background: white !important;
+      color: black !important;
+      margin: 0;
+      padding: 0.5in 0.5in;
+    }
+    body::before { display: none; }
+    .header, .sidebar, .bay-controls, .statusbar, .strip-actions, .tooltip { display: none !important; }
+    .main { grid-template-columns: 1fr !important; height: auto !important; }
+    .bay-area { overflow: visible !important; }
+    .strips-container {
+      padding: 0 !important;
+      overflow: visible !important;
+      display: flex !important;
+      flex-direction: column;
+      gap: 6px !important;
+    }
+    .strip-wrapper {
+      width: 3in;
+      margin: 0 auto;
+      break-inside: avoid;
+    }
+    .flight-strip {
+      border: 1.5px solid #333 !important;
+      box-shadow: none !important;
+      animation: none !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      width: 100%;
+    }
+    .cell-value, .notes-input { color: #000 !important; }
+    .cell-label, .strip-time { color: #555 !important; }
+    .strip-amended { color: #cc0000 !important; }
+  }
 </style>
 </head>
 <body>
+
 <header class="header">
   <div class="header-left">
-    <div class="logo">Federal Aviation Administration<span>ARTCC</span>Flight Strip Manager</div>
+    <div class="logo">
+      Federal Aviation Administration
+      <span>ARTCC</span>
+      Flight Strip Manager
+    </div>
     <div style="border-left:1px solid #1a3a1a; padding-left:20px;">
-      <div class="clock" id="utc-clock">--:--:--</div><div class="clock-label">UTC / ZULU</div>
+      <div class="clock" id="utc-clock">--:--:--</div>
+      <div class="clock-label">UTC / ZULU</div>
     </div>
   </div>
   <div class="header-right">
-    <button class="btn btn-amber" id="print-btn">⎙ PRINT STRIPS</button>
-    <button class="btn" id="import-open-btn">⬆ IMPORT</button>
-    <button class="btn btn-danger" id="clear-btn">⊗ CLEAR ALL</button>
+    <button class="btn btn-amber" id="print-btn" type="button">⎙ PRINT STRIPS</button>
+    <button class="btn" id="import-open-btn" type="button">⬆ IMPORT</button>
+    <button class="btn btn-danger" id="clear-btn" type="button">⊗ CLEAR ALL</button>
   </div>
 </header>
 
 <div class="main">
   <aside class="sidebar">
     <div class="sidebar-title">◈ Add Flight Strip</div>
-    <div class="form-group"><label>Callsign</label><input id="f-callsign" type="text" maxlength="8" placeholder="AAL123"></div>
-    <div class="form-row">
-      <div class="form-group"><label>Aircraft Type</label><input id="f-actype" type="text" maxlength="6" placeholder="B738"></div>
-      <div class="form-group"><label>Equipment</label><input id="f-equip" type="text" maxlength="5" placeholder="/L"></div>
+
+    <div class="form-group">
+      <label>Callsign</label>
+      <input id="f-callsign" type="text" placeholder="AAL123" maxlength="8">
     </div>
+
     <div class="form-row">
-      <div class="form-group"><label>Origin</label><input id="f-origin" type="text" maxlength="4" placeholder="KORD"></div>
-      <div class="form-group"><label>Destination</label><input id="f-dest" type="text" maxlength="4" placeholder="KLAX"></div>
+      <div class="form-group">
+        <label>Aircraft Type</label>
+        <input id="f-actype" type="text" placeholder="B738" maxlength="6">
+      </div>
+      <div class="form-group">
+        <label>Equipment</label>
+        <input id="f-equip" type="text" placeholder="/L" maxlength="5">
+      </div>
     </div>
+
     <div class="form-row">
-      <div class="form-group"><label>Alt Requested</label><input id="f-alt" type="text" maxlength="4" placeholder="350"></div>
-      <div class="form-group"><label>Assigned Alt</label><input id="f-asgn-alt" type="text" maxlength="4" placeholder="350"></div>
+      <div class="form-group">
+        <label>Origin</label>
+        <input id="f-origin" type="text" placeholder="KORD" maxlength="4">
+      </div>
+      <div class="form-group">
+        <label>Destination</label>
+        <input id="f-dest" type="text" placeholder="KLAX" maxlength="4">
+      </div>
     </div>
+
     <div class="form-row">
-      <div class="form-group"><label>Speed (kts)</label><input id="f-speed" type="text" maxlength="4" placeholder="450"></div>
-      <div class="form-group"><label>Squawk</label><input id="f-squawk" type="text" maxlength="4" placeholder="1234"></div>
+      <div class="form-group">
+        <label>Alt Requested</label>
+        <input id="f-alt" type="text" placeholder="350" maxlength="4">
+      </div>
+      <div class="form-group">
+        <label>Assigned Alt</label>
+        <input id="f-asgn-alt" type="text" placeholder="350" maxlength="4">
+      </div>
     </div>
-    <div class="form-group"><label>Route</label><input id="f-route" type="text" placeholder="PLANO JORDY GAYBO ZMBRO"></div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Speed (kts)</label>
+        <input id="f-speed" type="text" placeholder="450" maxlength="4">
+      </div>
+      <div class="form-group">
+        <label>Squawk</label>
+        <input id="f-squawk" type="text" placeholder="1234" maxlength="4">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Route</label>
+      <input id="f-route" type="text" placeholder="PLANO JORDY GAYBO ZMBRO">
+    </div>
+
     <div class="form-row">
       <div class="form-group">
         <label>Sector / Bay</label>
         <select id="f-bay">
-          <option value="Pending">PENDING</option><option value="Enroute">ENROUTE</option><option value="Arrival">ARRIVAL</option><option value="Departure">DEPARTURE</option><option value="Handoff">HANDOFF</option>
+          <option value="Pending">PENDING</option>
+          <option value="Enroute">ENROUTE</option>
+          <option value="Arrival">ARRIVAL</option>
+          <option value="Departure">DEPARTURE</option>
+          <option value="Handoff">HANDOFF</option>
         </select>
       </div>
       <div class="form-group">
         <label>Status</label>
         <select id="f-status">
-          <option value="dep">DEPARTURE</option><option value="arr">ARRIVAL</option><option value="ovr">OVERFLY</option><option value="hld">HOLDING</option>
+          <option value="dep">DEPARTURE</option>
+          <option value="arr">ARRIVAL</option>
+          <option value="ovr">OVERFLY</option>
+          <option value="hld">HOLDING</option>
         </select>
       </div>
     </div>
+
     <div class="sep"></div>
-    <button class="btn" id="add-strip-btn" style="width:100%; padding:10px; letter-spacing:3px; font-size:12px;">+ ISSUE STRIP</button>
+    <button class="btn" id="add-strip-btn" type="button" style="width:100%; padding:10px; letter-spacing:3px; font-size:12px;">
+      + ISSUE STRIP
+    </button>
+
     <div class="sep"></div>
     <div class="sidebar-title" style="margin-top:4px;">◈ Quick Insert</div>
-    <button class="btn" id="sample-btn" style="font-size:10px; padding:6px;">LOAD SAMPLE TRAFFIC</button>
+    <button class="btn" id="sample-btn" type="button" style="font-size:10px; padding:6px;">LOAD SAMPLE TRAFFIC</button>
   </aside>
 
   <div class="bay-area">
@@ -176,6 +747,7 @@
       <div class="bay-tab" data-bay="Handoff">HANDOFF</div>
       <div class="strip-count" id="strip-count">0 STRIPS</div>
     </div>
+
     <div class="strips-container" id="strips-container">
       <div class="empty-state" id="empty-state">
         <div class="radar-icon">◎</div>
@@ -183,23 +755,57 @@
         <div style="font-size:9px; letter-spacing:1px; margin-top:4px;">ADD FLIGHT OR LOAD SAMPLE TRAFFIC</div>
       </div>
     </div>
-    <div class="statusbar">ARTCC STRIP MANAGER | FACILITY: ZXX | VERSION: 2.1 | STRIPS: <span id="sb-count">0</span> | DEP: <span id="sb-dep">0</span> | ARR: <span id="sb-arr">0</span> | OVR: <span id="sb-ovr">0</span> | HLD: <span id="sb-hld">0</span></div>
+
+    <div class="statusbar">
+      ARTCC STRIP MANAGER | FACILITY: ZXX | VERSION: 2.1
+      | STRIPS: <span id="sb-count">0</span>
+      | DEP: <span id="sb-dep">0</span>
+      | ARR: <span id="sb-arr">0</span>
+      | OVR: <span id="sb-ovr">0</span>
+      | HLD: <span id="sb-hld">0</span>
+    </div>
   </div>
 </div>
 
 <div class="modal-backdrop" id="edit-modal">
   <div class="modal">
     <div class="modal-title">◈ Amend Strip</div>
-    <input type="hidden" id="edit-id">
-    <div class="form-group" style="margin-bottom:10px;"><label>Assigned Altitude</label><input id="edit-alt" type="text" placeholder="FL350"></div>
-    <div class="form-group" style="margin-bottom:10px;"><label>Speed</label><input id="edit-speed" type="text" placeholder="450"></div>
-    <div class="form-group" style="margin-bottom:10px;"><label>Squawk</label><input id="edit-squawk" type="text" placeholder="1234"></div>
+    <input type="hidden" id="edit-id" />
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>Assigned Altitude</label>
+      <input id="edit-alt" type="text" placeholder="FL350">
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>Speed</label>
+      <input id="edit-speed" type="text" placeholder="450">
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>Squawk</label>
+      <input id="edit-squawk" type="text" placeholder="1234">
+    </div>
     <div class="form-group" style="margin-bottom:10px;">
       <label>Bay</label>
-      <select id="edit-bay"><option value="Pending">PENDING</option><option value="Enroute">ENROUTE</option><option value="Arrival">ARRIVAL</option><option value="Departure">DEPARTURE</option><option value="Handoff">HANDOFF</option></select>
+      <select id="edit-bay">
+        <option value="Pending">PENDING</option>
+        <option value="Enroute">ENROUTE</option>
+        <option value="Arrival">ARRIVAL</option>
+        <option value="Departure">DEPARTURE</option>
+        <option value="Handoff">HANDOFF</option>
+      </select>
     </div>
-    <div class="form-group"><label>Status</label><select id="edit-status"><option value="dep">DEPARTURE</option><option value="arr">ARRIVAL</option><option value="ovr">OVERFLY</option><option value="hld">HOLDING</option></select></div>
-    <div class="modal-actions"><button class="btn" data-close="edit-modal">CANCEL</button><button class="btn btn-amber" id="save-edit-btn">AMEND</button></div>
+    <div class="form-group">
+      <label>Status</label>
+      <select id="edit-status">
+        <option value="dep">DEPARTURE</option>
+        <option value="arr">ARRIVAL</option>
+        <option value="ovr">OVERFLY</option>
+        <option value="hld">HOLDING</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" type="button" data-close="edit-modal">CANCEL</button>
+      <button class="btn btn-amber" type="button" id="save-edit-btn">AMEND</button>
+    </div>
   </div>
 </div>
 
@@ -210,13 +816,17 @@
       <label>Paste ICAO flight plan string</label>
       <textarea id="import-text" placeholder="(FPL-UAL123-IS&#10;-B738/L-SDFGIRY/S&#10;-KORD0830&#10;-N0450F350 J80 KLAX&#10;-KLAX&#10;-EET/0213 SEL/KQFQ)"></textarea>
     </div>
-    <div class="modal-actions"><button class="btn" data-close="import-modal">CANCEL</button><button class="btn btn-amber" id="import-fpl-btn">IMPORT</button></div>
+    <div class="modal-actions">
+      <button class="btn" type="button" data-close="import-modal">CANCEL</button>
+      <button class="btn btn-amber" type="button" id="import-fpl-btn">IMPORT</button>
+    </div>
   </div>
 </div>
 
 <script>
 (() => {
   'use strict';
+
   let strips = [];
   let currentBay = 'All';
   let dragSrcId = null;
@@ -225,19 +835,17 @@
 
   function updateClock() {
     const now = new Date();
-    $('utc-clock').textContent = `${String(now.getUTCHours()).padStart(2,'0')}:${String(now.getUTCMinutes()).padStart(2,'0')}:${String(now.getUTCSeconds()).padStart(2,'0')}`;
+    $('utc-clock').textContent =
+      `${String(now.getUTCHours()).padStart(2,'0')}:${String(now.getUTCMinutes()).padStart(2,'0')}:${String(now.getUTCSeconds()).padStart(2,'0')}`;
   }
 
-  function initUppercase() {
-    ['f-callsign','f-actype','f-equip','f-origin','f-dest','f-route','edit-alt','edit-speed','edit-squawk'].forEach(id => {
-      const el = $(id);
-      if (!el) return;
-      el.addEventListener('input', () => { el.value = el.value.toUpperCase(); });
-    });
+  function getStatusColor(status) {
+    return ({dep:'blue', arr:'green', ovr:'yellow', hld:'pink'}[status] || 'white');
   }
 
   function clearForm() {
-    ['f-callsign','f-actype','f-equip','f-origin','f-dest','f-alt','f-asgn-alt','f-speed','f-squawk','f-route'].forEach(id => { $(id).value = ''; });
+    ['f-callsign','f-actype','f-equip','f-origin','f-dest','f-alt','f-asgn-alt','f-speed','f-squawk','f-route']
+      .forEach(id => { $(id).value = ''; });
   }
 
   function statusLabel(status) {
@@ -250,63 +858,11 @@
     return s.length <= 3 ? `FL${s}` : s;
   }
 
-  function getColor(status) {
-    return ({dep:'blue', arr:'green', ovr:'yellow', hld:'pink'}[status] || 'white');
-  }
-
-  function buildStripHTML(strip) {
-    const emgSquawks = new Set(['7500','7600','7700']);
-    const isEmg = emgSquawks.has(String(strip.squawk));
-    const asgnDisplay = strip.asgnAlt ? fmtAlt(strip.asgnAlt) : fmtAlt(strip.alt);
-    const reqDisplay = fmtAlt(strip.alt);
-    return `
-      <div class="flight-strip color-${strip.color}${isEmg ? ' emg' : ''}">
-        <div class="strip-cell">
-          <div class="cell-label">CALLSIGN</div>
-          <div class="cell-value callsign">${strip.callsign}</div>
-          <span class="status-tag ${strip.status}">${statusLabel(strip.status)}</span>
-        </div>
-        <div class="strip-cell">
-          <div class="cell-label">TYPE / EQUIP</div>
-          <div class="cell-value">${strip.actype}${strip.equip}</div>
-          <div style="font-size:9px;color:#555;margin-top:2px;">${strip.origin}→${strip.dest}</div>
-        </div>
-        <div class="strip-cell">
-          <div class="cell-label">ASGN ALT</div>
-          <div class="cell-value altitude">${asgnDisplay}</div>
-          <div style="font-size:9px;color:#888;">REQ ${reqDisplay}</div>
-        </div>
-        <div class="strip-cell">
-          <div class="cell-label">SPEED</div>
-          <div class="cell-value speed">${strip.speed ? strip.speed + 'kts' : '---'}</div>
-        </div>
-        <div class="strip-cell">
-          <div class="cell-label">SQUAWK</div>
-          <div class="cell-value squawk" style="${isEmg ? 'color:#cc0000;font-weight:900;' : ''}">${strip.squawk || '1200'}${isEmg ? ' ⚠' : ''}</div>
-        </div>
-        <div class="strip-cell strip-notes">
-          <div class="cell-label">ROUTE / REMARKS</div>
-          <textarea class="notes-input" data-strip-id="${strip.id}" placeholder="NOTES...">${strip.notes || strip.route || ''}</textarea>
-        </div>
-        <div class="strip-cell" style="min-width:60px;">
-          <div class="cell-label">BAY</div>
-          <div class="cell-value" style="font-size:10px;">${String(strip.bay || '').toUpperCase()}</div>
-          <div class="strip-time">${strip.time}Z</div>
-          ${strip.amended ? '<div class="strip-amended">AMD</div>' : ''}
-        </div>
-      </div>
-      <div class="strip-actions">
-        <button class="strip-btn transfer" data-action="amend" data-id="${strip.id}"><span class="tooltip">AMEND</span>✎</button>
-        <button class="strip-btn hold" data-action="cycle" data-id="${strip.id}"><span class="tooltip">STATUS</span>⇄</button>
-        <button class="strip-btn delete" data-action="delete" data-id="${strip.id}"><span class="tooltip">REMOVE</span>✕</button>
-      </div>
-    `;
-  }
-
   function createStripData(data = {}) {
     const now = new Date();
     const zulu = `${String(now.getUTCHours()).padStart(2,'0')}${String(now.getUTCMinutes()).padStart(2,'0')}`;
     const status = data.status || $('f-status').value || 'dep';
+
     return {
       id: data.id || (Date.now() + Math.random()),
       callsign: String(data.callsign || $('f-callsign').value || '').trim().toUpperCase(),
@@ -321,11 +877,35 @@
       route: String(data.route || $('f-route').value || '').trim().toUpperCase(),
       bay: String(data.bay || $('f-bay').value || 'Pending'),
       status,
-      color: data.color || getColor(status),
+      color: data.color || getStatusColor(status),
       notes: String(data.notes || ''),
       time: data.time || zulu,
       amended: !!data.amended
     };
+  }
+
+  function buildStripHTML(strip) {
+    const emgSquawks = new Set(['7500','7600','7700']);
+    const isEmg = emgSquawks.has(String(strip.squawk));
+    const asgnDisplay = strip.asgnAlt ? fmtAlt(strip.asgnAlt) : fmtAlt(strip.alt);
+    const reqDisplay = fmtAlt(strip.alt);
+
+    return `
+      <div class="flight-strip color-${strip.color}${isEmg ? ' emg' : ''}">
+        <div class="strip-cell"><div class="cell-label">CALLSIGN</div><div class="cell-value callsign">${strip.callsign}</div><span class="status-tag ${strip.status}">${statusLabel(strip.status)}</span></div>
+        <div class="strip-cell"><div class="cell-label">TYPE / EQUIP</div><div class="cell-value">${strip.actype}${strip.equip}</div><div style="font-size:9px;color:#555;margin-top:2px;">${strip.origin}→${strip.dest}</div></div>
+        <div class="strip-cell"><div class="cell-label">ASGN ALT</div><div class="cell-value altitude">${asgnDisplay}</div><div style="font-size:9px;color:#888;">REQ ${reqDisplay}</div></div>
+        <div class="strip-cell"><div class="cell-label">SPEED</div><div class="cell-value speed">${strip.speed ? strip.speed + 'kts' : '---'}</div></div>
+        <div class="strip-cell"><div class="cell-label">SQUAWK</div><div class="cell-value squawk" style="${isEmg ? 'color:#cc0000;font-weight:900;' : ''}">${strip.squawk || '1200'}${isEmg ? ' ⚠' : ''}</div></div>
+        <div class="strip-cell strip-notes"><div class="cell-label">ROUTE / REMARKS</div><textarea class="notes-input" data-strip-id="${strip.id}" placeholder="NOTES...">${strip.notes || strip.route || ''}</textarea></div>
+        <div class="strip-cell" style="min-width:60px;"><div class="cell-label">BAY</div><div class="cell-value" style="font-size:10px;">${String(strip.bay || '').toUpperCase()}</div><div class="strip-time">${strip.time}Z</div>${strip.amended ? '<div class="strip-amended">AMD</div>' : ''}</div>
+      </div>
+      <div class="strip-actions">
+        <button class="strip-btn transfer" type="button" data-action="amend" data-id="${strip.id}"><span class="tooltip">AMEND</span>✎</button>
+        <button class="strip-btn hold" type="button" data-action="cycle" data-id="${strip.id}"><span class="tooltip">STATUS</span>⇄</button>
+        <button class="strip-btn delete" type="button" data-action="delete" data-id="${strip.id}"><span class="tooltip">REMOVE</span>✕</button>
+      </div>
+    `;
   }
 
   function renderStrips() {
@@ -340,11 +920,9 @@
     $('sb-ovr').textContent = strips.filter(s => s.status === 'ovr').length;
     $('sb-hld').textContent = strips.filter(s => s.status === 'hld').length;
 
-    const existing = new Map([...container.querySelectorAll('.strip-wrapper')].map(el => [el.dataset.id, el]));
     const wanted = new Set(filtered.map(s => String(s.id)));
-
-    [...existing.entries()].forEach(([id, el]) => {
-      if (!wanted.has(id)) el.remove();
+    [...container.querySelectorAll('.strip-wrapper')].forEach(el => {
+      if (!wanted.has(el.dataset.id)) el.remove();
     });
 
     if (filtered.length === 0) {
@@ -370,8 +948,11 @@
   }
 
   function addStrip(data = null) {
-    const cs = data?.callsign || $('f-callsign').value.trim();
-    if (!cs) { alert('Callsign required'); return; }
+    const callsign = String(data?.callsign || $('f-callsign').value || '').trim().toUpperCase();
+    if (!callsign) {
+      alert('Callsign required');
+      return;
+    }
     strips.unshift(createStripData(data));
     if (!data) clearForm();
     renderStrips();
@@ -387,7 +968,7 @@
     const s = strips.find(x => String(x.id) === String(id));
     if (!s) return;
     s.status = order[(order.indexOf(s.status) + 1) % order.length];
-    s.color = getColor(s.status);
+    s.color = getStatusColor(s.status);
     renderStrips();
   }
 
@@ -417,7 +998,7 @@
     s.squawk = $('edit-squawk').value.trim().toUpperCase();
     s.bay = $('edit-bay').value;
     s.status = $('edit-status').value;
-    s.color = getColor(s.status);
+    s.color = getStatusColor(s.status);
     s.amended = true;
     $('edit-modal').classList.remove('open');
     renderStrips();
@@ -450,17 +1031,28 @@
   function importFPL() {
     const raw = $('import-text').value || '';
     const cs = (raw.match(/FPL-([A-Z0-9]+)/i) || [])[1] || 'UNKNOWN';
-    const acType = (raw.match(/\n-([A-Z0-9]+)\/[A-Z]/i) || raw.match(/-([A-Z0-9]+)\/[A-Z]/i) || [])[1] || 'UNKN';
+    const acType = (raw.match(/-([A-Z0-9]+)\/[A-Z]/i) || [])[1] || 'UNKN';
     const origin = (raw.match(/-([A-Z]{4})\d{4}/i) || [])[1] || '????';
     const dest = (raw.match(/\n-([A-Z]{4})\b/i) || raw.match(/(?:^|\n)-([A-Z]{4})\b/i) || [])[1] || '????';
     const speed = (raw.match(/N0?(\d{3})/i) || [])[1] || '450';
     const altFL = (raw.match(/F(\d{3})/i) || [])[1] || '350';
+
     addStrip({
-      callsign: cs, actype: acType, equip: '/L', origin, dest,
-      alt: altFL, asgnAlt: altFL, speed, squawk: String(Math.floor(1000 + Math.random() * 6000)),
+      callsign: cs,
+      actype: acType,
+      equip: '/L',
+      origin,
+      dest,
+      alt: altFL,
+      asgnAlt: altFL,
+      speed,
+      squawk: String(Math.floor(1000 + Math.random() * 6000)),
       route: raw.replace(/\n/g,' ').replace(/\s+/g,' ').trim().slice(0, 70),
-      bay: 'Pending', status: 'dep', notes: ''
+      bay: 'Pending',
+      status: 'dep',
+      notes: ''
     });
+
     $('import-text').value = '';
     $('import-modal').classList.remove('open');
   }
@@ -475,8 +1067,13 @@
     renderStrips();
   }
 
-  function openModal(id){ $(id).classList.add('open'); }
-  function closeModal(id){ $(id).classList.remove('open'); }
+  function openModal(id) {
+    $(id).classList.add('open');
+  }
+
+  function closeModal(id) {
+    $(id).classList.remove('open');
+  }
 
   function bindEvents() {
     $('print-btn').addEventListener('click', () => window.print());
@@ -487,12 +1084,22 @@
     $('save-edit-btn').addEventListener('click', saveEdit);
     $('import-fpl-btn').addEventListener('click', importFPL);
 
-    document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => closeModal(btn.dataset.close)));
-    document.querySelectorAll('.modal-backdrop').forEach(el => el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); }));
+    document.querySelectorAll('[data-close]').forEach(btn => {
+      btn.addEventListener('click', () => closeModal(btn.dataset.close));
+    });
 
-    document.querySelectorAll('.bay-tab').forEach(tab => tab.addEventListener('click', () => switchBay(tab.dataset.bay, tab)));
+    document.querySelectorAll('.modal-backdrop').forEach(el => {
+      el.addEventListener('click', e => {
+        if (e.target === el) el.classList.remove('open');
+      });
+    });
+
+    document.querySelectorAll('.bay-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchBay(tab.dataset.bay, tab));
+    });
 
     const container = $('strips-container');
+
     container.addEventListener('click', (e) => {
       const btn = e.target.closest('.strip-btn');
       if (!btn) return;
@@ -503,7 +1110,9 @@
     });
 
     container.addEventListener('input', (e) => {
-      if (e.target.matches('.notes-input')) updateNotes(e.target.dataset.stripId, e.target.value);
+      if (e.target.matches('.notes-input')) {
+        updateNotes(e.target.dataset.stripId, e.target.value);
+      }
     });
 
     container.addEventListener('dragstart', (e) => {
@@ -539,16 +1148,17 @@
       }
     });
 
-    ['f-callsign','f-actype','f-equip','f-origin','f-dest','f-route'].forEach(id => {
+    ['f-callsign','f-actype','f-equip','f-origin','f-dest','f-route','edit-alt','edit-speed','edit-squawk'].forEach(id => {
       const el = $(id);
-      el.addEventListener('input', () => { el.value = el.value.toUpperCase(); });
+      el.addEventListener('input', () => {
+        el.value = el.value.toUpperCase();
+      });
     });
   }
 
   function init() {
     updateClock();
     setInterval(updateClock, 1000);
-    initUppercase();
     bindEvents();
     renderStrips();
   }
