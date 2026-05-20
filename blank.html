@@ -3,131 +3,111 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FAA Standard Strip Template</title>
+<title>FAA Terminal Strip Template</title>
 <style>
   * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: #fff;
-    font-family: "Courier New", monospace;
-  }
-  .page {
-    padding: 0.25in;
-  }
+  body { margin: 0; background: #fff; font-family: "Courier New", monospace; }
+  .page { padding: 0.25in; }
   .strip {
     width: 8in;
     height: 1in;
     border: 2px solid #000;
-    display: grid;
-    grid-template-columns: 2.05in 0.95in 1.35in 3.65in;
+    display: flex;
     margin: 0 auto;
-  }
-  .block {
-    border-right: 2px solid #000;
-    position: relative;
-  }
-  .block:last-child {
-    border-right: 0;
+    overflow: hidden;
   }
   .left {
+    width: 2.35in;
+    border-right: 2px solid #000;
     display: grid;
-    grid-template-columns: 0.7in 1fr;
+    grid-template-columns: 0.75in 1fr;
     grid-template-rows: repeat(4, 0.25in);
   }
-  .left .cell {
-    border-right: 2px solid #000;
-    border-bottom: 2px solid #000;
-    padding: 1px 4px;
-    font-size: 12px;
-    line-height: 1;
-  }
-  .left .cell:nth-child(2n) {
-    border-right: 0;
-  }
-  .left .cell:nth-last-child(-n+2) {
-    border-bottom: 0;
-  }
   .mid1 {
+    width: 0.95in;
+    border-right: 2px solid #000;
     display: grid;
-    grid-template-rows: repeat(3, 0.333in);
-  }
-  .mid1 .cell,
-  .mid2 .cell,
-  .right .cell {
-    border-bottom: 2px solid #000;
-    padding: 1px 4px;
-    font-size: 12px;
-    line-height: 1;
-  }
-  .mid1 .cell:last-child,
-  .mid2 .cell:last-child,
-  .right .cell:nth-last-child(-n+3) {
-    border-bottom: 0;
+    grid-template-rows: repeat(3, 0.3333in);
   }
   .mid2 {
+    width: 1.05in;
+    border-right: 2px solid #000;
     display: grid;
-    grid-template-rows: repeat(3, 0.333in);
+    grid-template-rows: repeat(3, 0.3333in);
+  }
+  .mid3 {
+    width: 2.55in;
+    border-right: 2px solid #000;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 0.5in 0.5in;
   }
   .right {
+    width: 1.1in;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 0.333in);
+    grid-template-rows: repeat(3, 0.3333in);
   }
-  .right .cell {
+  .cell {
     border-right: 2px solid #000;
+    border-bottom: 2px solid #000;
+    padding: 1px 4px;
+    font-size: 12px;
+    line-height: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
   }
-  .right .cell:nth-child(3n) {
-    border-right: 0;
-  }
-  .label {
-    display: inline-block;
-    font-size: 13px;
-    margin-top: 0;
-  }
+  .left .cell:nth-child(2n) { border-right: 0; }
+  .left .cell:nth-last-child(-n+2) { border-bottom: 0; }
+  .mid1 .cell:last-child,
+  .mid2 .cell:last-child,
+  .right .cell:nth-last-child(-n+3) { border-bottom: 0; }
+  .mid3 .cell:nth-child(2n) { border-right: 0; }
+  .mid3 .cell:nth-last-child(-n+2) { border-bottom: 0; }
+  .right .cell:nth-child(3n) { border-right: 0; }
+  .label { font-size: 13px; }
 </style>
 </head>
 <body>
 <div class="page">
   <div class="strip">
-    <div class="block left">
-      <div class="cell">1</div>
-      <div class="cell">2A</div>
-      <div class="cell">2</div>
+    <div class="left">
+      <div class="cell"><span class="label">1</span></div>
+      <div class="cell"><span class="label">2A</span></div>
+      <div class="cell"><span class="label">2</span></div>
       <div class="cell"></div>
-      <div class="cell">3</div>
+      <div class="cell"><span class="label">3</span></div>
       <div class="cell"></div>
-      <div class="cell">4</div>
+      <div class="cell"><span class="label">4</span></div>
       <div class="cell"></div>
     </div>
-
-    <div class="block mid1">
-      <div class="cell">5</div>
-      <div class="cell">6</div>
-      <div class="cell">7</div>
+    <div class="mid1">
+      <div class="cell"><span class="label">5</span></div>
+      <div class="cell"><span class="label">6</span></div>
+      <div class="cell"><span class="label">7</span></div>
     </div>
-
-    <div class="block mid2">
-      <div class="cell">8</div>
-      <div class="cell">8A</div>
-      <div class="cell">8B</div>
+    <div class="mid2">
+      <div class="cell"><span class="label">8</span></div>
+      <div class="cell"><span class="label">8A</span></div>
+      <div class="cell"><span class="label">8B</span></div>
     </div>
-
-    <div class="block right">
-      <div class="cell">9</div>
-      <div class="cell"></div>
-      <div class="cell">9B</div>
-      <div class="cell">9A</div>
-      <div class="cell"></div>
-      <div class="cell">9C</div>
-      <div class="cell">10</div>
-      <div class="cell">11</div>
-      <div class="cell">12</div>
-      <div class="cell">13</div>
-      <div class="cell">14</div>
-      <div class="cell">15</div>
-      <div class="cell">16</div>
-      <div class="cell">17</div>
-      <div class="cell">18</div>
+    <div class="mid3">
+      <div class="cell"><span class="label">9</span></div>
+      <div class="cell"><span class="label">9B</span></div>
+      <div class="cell"><span class="label">9A</span></div>
+      <div class="cell"><span class="label">9C</span></div>
+    </div>
+    <div class="right">
+      <div class="cell"><span class="label">10</span></div>
+      <div class="cell"><span class="label">11</span></div>
+      <div class="cell"><span class="label">12</span></div>
+      <div class="cell"><span class="label">13</span></div>
+      <div class="cell"><span class="label">14</span></div>
+      <div class="cell"><span class="label">15</span></div>
+      <div class="cell"><span class="label">16</span></div>
+      <div class="cell"><span class="label">17</span></div>
+      <div class="cell"><span class="label">18</span></div>
     </div>
   </div>
 </div>
