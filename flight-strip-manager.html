@@ -13,17 +13,9 @@
     --crt-dim: #006618;
     --bg-dark: #0a0c0a;
     --bg-panel: #0d110d;
-    --bg-strip: #f5f0e8;
-    --strip-border: #2a2a2a;
-    --strip-blue: #cce5ff;
-    --strip-yellow: #fff9cc;
-    --strip-pink: #ffd6e0;
-    --strip-green: #d4edda;
     --strip-white: #f8f8f8;
     --panel-border: #1a2a1a;
-    --highlight: #00ff41;
     --danger: #ff3333;
-    --warn: #ffaa00;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -134,32 +126,20 @@
     z-index: -1;
   }
 
-  .btn:hover {
-    color: #000;
-    text-shadow: none;
-  }
-
-  .btn:hover::before {
-    left: 0;
-  }
+  .btn:hover { color: #000; text-shadow: none; }
+  .btn:hover::before { left: 0; }
 
   .btn-amber {
     border-color: var(--crt-amber);
     color: var(--crt-amber);
   }
-
-  .btn-amber::before {
-    background: var(--crt-amber);
-  }
+  .btn-amber::before { background: var(--crt-amber); }
 
   .btn-danger {
     border-color: var(--danger);
     color: var(--danger);
   }
-
-  .btn-danger::before {
-    background: var(--danger);
-  }
+  .btn-danger::before { background: var(--danger); }
 
   .main {
     display: grid;
@@ -187,17 +167,8 @@
     text-transform: uppercase;
   }
 
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
   label {
     font-size: 9px;
@@ -216,7 +187,11 @@
     width: 100%;
     letter-spacing: 1px;
     outline: none;
-    transition: border-color 0.2s;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 90px;
   }
 
   input:focus, select:focus, textarea:focus {
@@ -224,18 +199,10 @@
     box-shadow: 0 0 8px #00ff4122;
   }
 
-  input::placeholder, textarea::placeholder {
-    color: #1a3a1a;
-  }
+  input::placeholder, textarea::placeholder { color: #1a3a1a; }
+  select option { background: #050805; }
 
-  select option {
-    background: #050805;
-  }
-
-  .sep {
-    height: 1px;
-    background: var(--panel-border);
-  }
+  .sep { height: 1px; background: var(--panel-border); }
 
   .bay-area {
     display: flex;
@@ -312,10 +279,7 @@
     animation: radar-spin 4s linear infinite;
   }
 
-  @keyframes radar-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+  @keyframes radar-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
   .strip-wrapper {
     display: flex;
@@ -342,14 +306,8 @@
     border-radius: 2px;
   }
 
-  .strip-wrapper.new {
-    animation: strip-appear 0.25s ease-out;
-  }
-
-  @keyframes strip-appear {
-    0% { opacity: 0; transform: translateY(-6px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
+  .strip-wrapper.new { animation: strip-appear 0.25s ease-out; }
+  @keyframes strip-appear { 0% { opacity: 0; transform: translateY(-6px); } 100% { opacity: 1; transform: translateY(0); } }
 
   .flight-strip {
     flex: 1;
@@ -357,24 +315,19 @@
     border: 1px solid #999;
     border-left: 6px solid #333;
     display: grid;
-    grid-template-columns: 90px 100px 80px 80px 70px 1fr 70px;
-    min-height: 52px;
+    grid-template-columns: 1.25fr 1.15fr 0.85fr 0.75fr 0.75fr 1.85fr 0.75fr;
+    min-height: 56px;
     font-family: 'Courier Prime', 'Courier New', monospace;
     position: relative;
     overflow: hidden;
-    transition: box-shadow 0.2s;
     user-select: none;
   }
 
-  .flight-strip:hover {
-    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-  }
-
-  .flight-strip.color-blue { background: var(--strip-blue); border-left-color: #2563eb; }
-  .flight-strip.color-yellow { background: var(--strip-yellow); border-left-color: #ca8a04; }
-  .flight-strip.color-pink { background: var(--strip-pink); border-left-color: #be185d; }
-  .flight-strip.color-green { background: var(--strip-green); border-left-color: #166534; }
-  .flight-strip.color-white { background: var(--strip-white); border-left-color: #333; }
+  .flight-strip.color-blue { background: #cce5ff; border-left-color: #2563eb; }
+  .flight-strip.color-yellow { background: #fff9cc; border-left-color: #ca8a04; }
+  .flight-strip.color-pink { background: #ffd6e0; border-left-color: #be185d; }
+  .flight-strip.color-green { background: #d4edda; border-left-color: #166534; }
+  .flight-strip.color-white { background: #f8f8f8; border-left-color: #333; }
 
   .strip-cell {
     border-right: 1px solid #bbb;
@@ -386,9 +339,7 @@
     min-width: 0;
   }
 
-  .strip-cell:last-child {
-    border-right: none;
-  }
+  .strip-cell:last-child { border-right: none; }
 
   .cell-label {
     font-size: 7px;
@@ -410,11 +361,7 @@
     text-overflow: ellipsis;
   }
 
-  .cell-value.callsign {
-    font-size: 15px;
-    letter-spacing: 1px;
-  }
-
+  .cell-value.callsign { font-size: 15px; letter-spacing: 1px; }
   .cell-value.altitude { color: #1a1a8c; }
   .cell-value.speed { color: #7c0000; }
   .cell-value.squawk { color: #006600; }
@@ -488,9 +435,7 @@
     z-index: 10;
   }
 
-  .strip-btn:hover .tooltip {
-    opacity: 1;
-  }
+  .strip-btn:hover .tooltip { opacity: 1; }
 
   .strip-time {
     position: absolute;
@@ -561,9 +506,7 @@
     justify-content: center;
   }
 
-  .modal-backdrop.open {
-    display: flex;
-  }
+  .modal-backdrop.open { display: flex; }
 
   .modal {
     background: var(--bg-panel);
@@ -590,36 +533,13 @@
   }
 
   @media print {
-    body {
-      background: white !important;
-      color: black !important;
-      margin: 0;
-      padding: 0.5in 0.5in;
-    }
-    body::before { display: none; }
-    .header, .sidebar, .bay-controls, .statusbar, .strip-actions, .tooltip { display: none !important; }
+    body { background: white !important; color: black !important; margin: 0; padding: 0.5in 0.5in; }
+    body::before, .header, .sidebar, .bay-controls, .statusbar, .strip-actions, .tooltip { display: none !important; }
     .main { grid-template-columns: 1fr !important; height: auto !important; }
     .bay-area { overflow: visible !important; }
-    .strips-container {
-      padding: 0 !important;
-      overflow: visible !important;
-      display: flex !important;
-      flex-direction: column;
-      gap: 6px !important;
-    }
-    .strip-wrapper {
-      width: 3in;
-      margin: 0 auto;
-      break-inside: avoid;
-    }
-    .flight-strip {
-      border: 1.5px solid #333 !important;
-      box-shadow: none !important;
-      animation: none !important;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-      width: 100%;
-    }
+    .strips-container { padding: 0 !important; overflow: visible !important; display: flex !important; flex-direction: column; gap: 6px !important; }
+    .strip-wrapper { width: 3in; margin: 0 auto; break-inside: avoid; }
+    .flight-strip { border: 1.5px solid #333 !important; box-shadow: none !important; animation: none !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; width: 100%; }
     .cell-value, .notes-input { color: #000 !important; }
     .cell-label, .strip-time { color: #555 !important; }
     .strip-amended { color: #cc0000 !important; }
@@ -650,61 +570,24 @@
 <div class="main">
   <aside class="sidebar">
     <div class="sidebar-title">◈ Add Flight Strip</div>
-
-    <div class="form-group">
-      <label>Callsign</label>
-      <input id="f-callsign" type="text" placeholder="AAL123" maxlength="8">
-    </div>
-
+    <div class="form-group"><label>Callsign</label><input id="f-callsign" type="text" placeholder="AAL123" maxlength="8"></div>
     <div class="form-row">
-      <div class="form-group">
-        <label>Aircraft Type</label>
-        <input id="f-actype" type="text" placeholder="B738" maxlength="6">
-      </div>
-      <div class="form-group">
-        <label>Equipment</label>
-        <input id="f-equip" type="text" placeholder="/L" maxlength="5">
-      </div>
+      <div class="form-group"><label>Aircraft Type</label><input id="f-actype" type="text" placeholder="B738" maxlength="6"></div>
+      <div class="form-group"><label>Equipment</label><input id="f-equip" type="text" placeholder="/L" maxlength="5"></div>
     </div>
-
     <div class="form-row">
-      <div class="form-group">
-        <label>Origin</label>
-        <input id="f-origin" type="text" placeholder="KORD" maxlength="4">
-      </div>
-      <div class="form-group">
-        <label>Destination</label>
-        <input id="f-dest" type="text" placeholder="KLAX" maxlength="4">
-      </div>
+      <div class="form-group"><label>Origin</label><input id="f-origin" type="text" placeholder="KORD" maxlength="4"></div>
+      <div class="form-group"><label>Destination</label><input id="f-dest" type="text" placeholder="KLAX" maxlength="4"></div>
     </div>
-
     <div class="form-row">
-      <div class="form-group">
-        <label>Alt Requested</label>
-        <input id="f-alt" type="text" placeholder="350" maxlength="4">
-      </div>
-      <div class="form-group">
-        <label>Assigned Alt</label>
-        <input id="f-asgn-alt" type="text" placeholder="350" maxlength="4">
-      </div>
+      <div class="form-group"><label>Alt Requested</label><input id="f-alt" type="text" placeholder="350" maxlength="4"></div>
+      <div class="form-group"><label>Assigned Alt</label><input id="f-asgn-alt" type="text" placeholder="350" maxlength="4"></div>
     </div>
-
     <div class="form-row">
-      <div class="form-group">
-        <label>Speed (kts)</label>
-        <input id="f-speed" type="text" placeholder="450" maxlength="4">
-      </div>
-      <div class="form-group">
-        <label>Squawk</label>
-        <input id="f-squawk" type="text" placeholder="1234" maxlength="4">
-      </div>
+      <div class="form-group"><label>Speed (kts)</label><input id="f-speed" type="text" placeholder="450" maxlength="4"></div>
+      <div class="form-group"><label>Squawk</label><input id="f-squawk" type="text" placeholder="1234" maxlength="4"></div>
     </div>
-
-    <div class="form-group">
-      <label>Route</label>
-      <input id="f-route" type="text" placeholder="PLANO JORDY GAYBO ZMBRO">
-    </div>
-
+    <div class="form-group"><label>Route</label><input id="f-route" type="text" placeholder="PLANO JORDY GAYBO ZMBRO"></div>
     <div class="form-row">
       <div class="form-group">
         <label>Sector / Bay</label>
@@ -726,12 +609,8 @@
         </select>
       </div>
     </div>
-
     <div class="sep"></div>
-    <button class="btn" id="add-strip-btn" type="button" style="width:100%; padding:10px; letter-spacing:3px; font-size:12px;">
-      + ISSUE STRIP
-    </button>
-
+    <button class="btn" id="add-strip-btn" type="button" style="width:100%; padding:10px; letter-spacing:3px; font-size:12px;">+ ISSUE STRIP</button>
     <div class="sep"></div>
     <div class="sidebar-title" style="margin-top:4px;">◈ Quick Insert</div>
     <button class="btn" id="sample-btn" type="button" style="font-size:10px; padding:6px;">LOAD SAMPLE TRAFFIC</button>
@@ -771,18 +650,9 @@
   <div class="modal">
     <div class="modal-title">◈ Amend Strip</div>
     <input type="hidden" id="edit-id" />
-    <div class="form-group" style="margin-bottom:10px;">
-      <label>Assigned Altitude</label>
-      <input id="edit-alt" type="text" placeholder="FL350">
-    </div>
-    <div class="form-group" style="margin-bottom:10px;">
-      <label>Speed</label>
-      <input id="edit-speed" type="text" placeholder="450">
-    </div>
-    <div class="form-group" style="margin-bottom:10px;">
-      <label>Squawk</label>
-      <input id="edit-squawk" type="text" placeholder="1234">
-    </div>
+    <div class="form-group" style="margin-bottom:10px;"><label>Assigned Altitude</label><input id="edit-alt" type="text" placeholder="FL350"></div>
+    <div class="form-group" style="margin-bottom:10px;"><label>Speed</label><input id="edit-speed" type="text" placeholder="450"></div>
+    <div class="form-group" style="margin-bottom:10px;"><label>Squawk</label><input id="edit-squawk" type="text" placeholder="1234"></div>
     <div class="form-group" style="margin-bottom:10px;">
       <label>Bay</label>
       <select id="edit-bay">
@@ -835,8 +705,7 @@
 
   function updateClock() {
     const now = new Date();
-    $('utc-clock').textContent =
-      `${String(now.getUTCHours()).padStart(2,'0')}:${String(now.getUTCMinutes()).padStart(2,'0')}:${String(now.getUTCSeconds()).padStart(2,'0')}`;
+    $('utc-clock').textContent = `${String(now.getUTCHours()).padStart(2,'0')}:${String(now.getUTCMinutes()).padStart(2,'0')}:${String(now.getUTCSeconds()).padStart(2,'0')}`;
   }
 
   function getStatusColor(status) {
@@ -858,10 +727,15 @@
     return s.length <= 3 ? `FL${s}` : s;
   }
 
+  function normalizeBay(bay) {
+    return String(bay || '').trim().toLowerCase();
+  }
+
   function createStripData(data = {}) {
     const now = new Date();
     const zulu = `${String(now.getUTCHours()).padStart(2,'0')}${String(now.getUTCMinutes()).padStart(2,'0')}`;
     const status = data.status || $('f-status').value || 'dep';
+    const bay = data.bay || (currentBay === 'All' ? 'Pending' : currentBay);
 
     return {
       id: data.id || (Date.now() + Math.random()),
@@ -875,7 +749,7 @@
       speed: String(data.speed || $('f-speed').value || '---').trim().toUpperCase(),
       squawk: String(data.squawk || $('f-squawk').value || '1200').trim().toUpperCase(),
       route: String(data.route || $('f-route').value || '').trim().toUpperCase(),
-      bay: String(data.bay || $('f-bay').value || 'Pending'),
+      bay: String(bay),
       status,
       color: data.color || getStatusColor(status),
       notes: String(data.notes || ''),
@@ -911,7 +785,9 @@
   function renderStrips() {
     const container = $('strips-container');
     const empty = $('empty-state');
-    const filtered = currentBay === 'All' ? strips : strips.filter(s => s.bay === currentBay);
+    const filtered = currentBay === 'All'
+      ? strips
+      : strips.filter(s => normalizeBay(s.bay) === normalizeBay(currentBay));
 
     $('strip-count').textContent = `${filtered.length} STRIP${filtered.length !== 1 ? 'S' : ''}`;
     $('sb-count').textContent = strips.length;
@@ -920,31 +796,25 @@
     $('sb-ovr').textContent = strips.filter(s => s.status === 'ovr').length;
     $('sb-hld').textContent = strips.filter(s => s.status === 'hld').length;
 
-    const wanted = new Set(filtered.map(s => String(s.id)));
-    [...container.querySelectorAll('.strip-wrapper')].forEach(el => {
-      if (!wanted.has(el.dataset.id)) el.remove();
-    });
+    [...container.querySelectorAll('.strip-wrapper')].forEach(el => el.remove());
 
     if (filtered.length === 0) {
       empty.style.display = 'flex';
       return;
     }
+
     empty.style.display = 'none';
 
+    const frag = document.createDocumentFragment();
     filtered.forEach(strip => {
-      let wrapper = container.querySelector(`.strip-wrapper[data-id="${strip.id}"]`);
-      if (!wrapper) {
-        wrapper = document.createElement('div');
-        wrapper.className = 'strip-wrapper new';
-        wrapper.dataset.id = strip.id;
-        wrapper.draggable = true;
-        wrapper.innerHTML = buildStripHTML(strip);
-        container.appendChild(wrapper);
-        setTimeout(() => wrapper.classList.remove('new'), 300);
-      } else {
-        wrapper.innerHTML = buildStripHTML(strip);
-      }
+      const wrapper = document.createElement('div');
+      wrapper.className = 'strip-wrapper new';
+      wrapper.dataset.id = strip.id;
+      wrapper.draggable = true;
+      wrapper.innerHTML = buildStripHTML(strip);
+      frag.appendChild(wrapper);
     });
+    container.appendChild(frag);
   }
 
   function addStrip(data = null) {
@@ -953,6 +823,7 @@
       alert('Callsign required');
       return;
     }
+
     strips.unshift(createStripData(data));
     if (!data) clearForm();
     renderStrips();
@@ -1067,13 +938,8 @@
     renderStrips();
   }
 
-  function openModal(id) {
-    $(id).classList.add('open');
-  }
-
-  function closeModal(id) {
-    $(id).classList.remove('open');
-  }
+  function openModal(id) { $(id).classList.add('open'); }
+  function closeModal(id) { $(id).classList.remove('open'); }
 
   function bindEvents() {
     $('print-btn').addEventListener('click', () => window.print());
@@ -1150,9 +1016,7 @@
 
     ['f-callsign','f-actype','f-equip','f-origin','f-dest','f-route','edit-alt','edit-speed','edit-squawk'].forEach(id => {
       const el = $(id);
-      el.addEventListener('input', () => {
-        el.value = el.value.toUpperCase();
-      });
+      if (el) el.addEventListener('input', () => { el.value = el.value.toUpperCase(); });
     });
   }
 
